@@ -33,6 +33,12 @@ export default function Authenticated({
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    href={route('import-data')}
+                                    active={route().current('import-data')}
+                                >
+                                    Import Data
+                                </NavLink>
                             </div>
                         </div>
 
@@ -136,6 +142,12 @@ export default function Authenticated({
                             active={route().current('dashboard')}
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('import-data')}
+                            active={route().current('import-data')}
+                        >
+                            Import Data
                         </ResponsiveNavLink>
                     </div>
 
