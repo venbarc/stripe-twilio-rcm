@@ -81,6 +81,23 @@ class InvoiceService
         }
     }
 
+    /**
+     * Called when a Stripe Checkout Session expires (24h limit).
+     * Reverts the invoice from pending back to unpaid and clears the stale link.
+     */
+    public function markExpired(string $sessionId): void
+    {
+        $invoice = $this->invoices->findByStripeSession($sessionId);
+
+        if ($invoice && $invoice->status === 'pending') {
+            $this->invoices->update($invoice, [
+                'status'                     => 'unpaid',
+                'stripe_payment_link'        => null,
+                'stripe_checkout_session_id' => null,
+            ]);
+        }
+    }
+
     public function dashboardStats(): array
     {
         return [

@@ -26,10 +26,13 @@ class StripeWebhookController extends Controller
             return response()->json(['error' => 'Invalid signature'], 400);
         }
 
-        if ($event->type === 'checkout.session.completed') {
-            $session = $event->data->object;
-            $this->invoiceService->markPaid($session->id);
-        }
+        $session = $event->data->object;
+
+        match ($event->type) {
+            'checkout.session.completed' => $this->invoiceService->markPaid($session->id),
+            'checkout.session.expired'   => $this->invoiceService->markExpired($session->id),
+            default                      => null,
+        };
 
         return response()->json(['received' => true]);
     }

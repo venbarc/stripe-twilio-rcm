@@ -38,7 +38,8 @@ type InvoiceShowProps = Invoice & {
 export default function Show({
     invoice,
     status,
-}: PageProps<{ invoice: InvoiceShowProps; status?: string }>) {
+    payment,
+}: PageProps<{ invoice: InvoiceShowProps; status?: string; payment?: string }>) {
     const paymentLinkForm = useForm({});
     const smsForm         = useForm({});
     const deleteForm      = useForm({});
@@ -81,14 +82,28 @@ export default function Show({
             <div className="py-12">
                 <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
 
-                    {/* Flash status */}
+                    {/* Flash / payment callback banner */}
                     {status && (
-                        <div className={`rounded-lg border px-4 py-3 text-sm ${
-                            status.toLowerCase().startsWith('sms failed') || status.toLowerCase().startsWith('error')
+                        <div className={`flex items-start gap-3 rounded-lg border px-4 py-3 text-sm ${
+                            payment === 'success'
+                                ? 'border-brand-200 bg-brand-50 text-brand-800'
+                                : payment === 'cancelled'
+                                ? 'border-amber-200 bg-amber-50 text-amber-800'
+                                : status.toLowerCase().startsWith('sms failed') || status.toLowerCase().startsWith('error')
                                 ? 'border-red-200 bg-red-50 text-red-800'
                                 : 'border-brand-200 bg-brand-50 text-brand-800'
                         }`}>
-                            {status}
+                            {payment === 'success' && (
+                                <svg className="mt-0.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            )}
+                            {payment === 'cancelled' && (
+                                <svg className="mt-0.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            )}
+                            <span>{status}</span>
                         </div>
                     )}
 

@@ -69,15 +69,27 @@ class InvoiceController extends Controller
         return redirect()->route('invoices.show', $invoice);
     }
 
-    public function show(Invoice $invoice): Response
+    public function show(Invoice $invoice, Request $request): Response
     {
         $invoice->load(['client', 'smsLogs' => function ($query) {
             $query->orderByDesc('sent_at');
         }]);
 
+        $payment       = $request->query('payment'); // 'success' | 'cancelled' | null
+        $statusMessage = session('status');
+
+        if (!$statusMessage) {
+            if ($payment === 'success') {
+                $statusMessage = 'Payment received! This invoice will be marked as paid shortly.';
+            } elseif ($payment === 'cancelled') {
+                $statusMessage = 'Payment was cancelled. The invoice is still pending — you can send a new payment link when ready.';
+            }
+        }
+
         return Inertia::render('Invoices/Show', [
             'invoice' => $invoice,
-            'status'  => session('status'),
+            'status'  => $statusMessage,
+            'payment' => $payment,
         ]);
     }
 
